@@ -1,4 +1,8 @@
-# CursorLock 1.0.0
+# CursorLock 1.0.1
+
+- Keep the lock through Win+D (Show desktop) and other foreground changes. Windows resets the cursor confine to the whole desktop in those cases; CursorLock now reasserts the lock instead of dropping it, so you no longer have to press the shortcut again. It still yields when another application sets its own cursor confine.
+
+## 1.0.0
 
 - Lock the cursor to the current monitor with Ctrl + Alt + L; press again to unlock.
 - Configurable global shortcut with conflict handling.
