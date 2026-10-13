@@ -5,7 +5,7 @@ internal static class NativeMethods
 {
     internal const int WmHotkey = 0x0312, WmDisplayChange = 0x007E;
     internal const uint ModNoRepeat = 0x4000;
-    internal const int VkControl = 0x11;
+    internal const int VkShift = 0x10, VkControl = 0x11, VkMenu = 0x12;
     [DllImport("user32.dll")]
     internal static extern short GetAsyncKeyState(int vKey);
     [StructLayout(LayoutKind.Sequential)]

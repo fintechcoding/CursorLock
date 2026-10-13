@@ -17,16 +17,21 @@ internal sealed record Hotkey(uint Modifiers, uint VirtualKey)
         return value + KeyInterop.KeyFromVirtualKey((int)VirtualKey);
     }
 }
-internal sealed record Settings(Hotkey Hotkey)
+// CrossKey is the virtual-key held to temporarily lift the lock so the cursor
+// can cross to another monitor: Ctrl (0x11), Alt (0x12), Shift (0x10), or 0 to
+// disable the feature. Defaults to Ctrl; absent in older settings files.
+internal sealed record Settings(Hotkey Hotkey, int CrossKey = 0x11)
 {
     internal static readonly string DirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CursorLock");
     private static string FilePath(string? directory) => Path.Combine(directory ?? DirectoryPath, "settings.json");
+    public static bool IsValidCrossKey(int key) => key is 0 or 0x10 or 0x11 or 0x12;
     public static Settings Load(string? directory = null)
     {
         try
         {
             var settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(FilePath(directory)));
-            if (settings?.Hotkey is { IsValid: true }) return settings;
+            if (settings?.Hotkey is { IsValid: true })
+                return IsValidCrossKey(settings.CrossKey) ? settings : settings with { CrossKey = 0x11 };
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or JsonException) { }
         return new Settings(Hotkey.Default);

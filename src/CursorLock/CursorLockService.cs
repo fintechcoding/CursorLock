@@ -45,11 +45,11 @@ internal sealed class CursorLockService
     // Called frequently while locked. Holding Ctrl lifts the clip so the cursor
     // can move to another monitor; releasing Ctrl re-locks to whichever monitor
     // the cursor now sits on. Otherwise it behaves like CheckOwnership.
-    public void Tick()
+    public void Tick(int crossKey)
     {
         if (!IsLocked) return;
-        bool ctrl = (NativeMethods.GetAsyncKeyState(NativeMethods.VkControl) & 0x8000) != 0;
-        if (ctrl)
+        bool held = crossKey != 0 && (NativeMethods.GetAsyncKeyState(crossKey) & 0x8000) != 0;
+        if (held)
         {
             if (!bypassing)
             {

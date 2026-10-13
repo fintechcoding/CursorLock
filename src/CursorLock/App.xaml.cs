@@ -69,7 +69,7 @@ public partial class App : Application
             SystemEvents.PowerModeChanged += PowerChanged;
             // A short interval so holding Ctrl to cross monitors feels immediate.
             ownershipTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
-            ownershipTimer.Tick += (_, _) => Cursor.Tick();
+            ownershipTimer.Tick += (_, _) => Cursor.Tick(Preferences.CrossKey);
             try { hotkeys.Set(Preferences.Hotkey); }
             catch (Win32Exception error)
             {
@@ -138,6 +138,18 @@ public partial class App : Application
             throw;
         }
         UpdateState();
+    }
+
+    internal void SetCrossKey(int virtualKey)
+    {
+        if (!Settings.IsValidCrossKey(virtualKey)) return;
+        try
+        {
+            var next = Preferences with { CrossKey = virtualKey };
+            next.Save();
+            Preferences = next;
+        }
+        catch (Exception error) { ReportError("Could not save the cross-monitor key: " + error.Message); }
     }
 
     internal void SetStartup(bool enabled)

@@ -12,12 +12,14 @@ public partial class MainWindow : Window
 {
     private readonly App app;
     private Hotkey proposed;
+    private bool loadingUi;
     internal MainWindow(App app)
     {
         InitializeComponent();
         this.app = app;
         proposed = app.Preferences.Hotkey;
         HotkeyBox.Text = proposed.ToString();
+        SelectCrossKey(app.Preferences.CrossKey);
         app.StateChanged += RefreshState;
         using var icon = TrayIconFactory.Create(false);
         Icon = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
@@ -29,7 +31,10 @@ public partial class MainWindow : Window
         bool locked = app.Cursor.IsLocked;
         StatusText.Text = locked ? "Locked to monitor" : "Unlocked";
         StatusText.Foreground = new SolidColorBrush(locked ? Color.FromRgb(0, 95, 184) : Color.FromRgb(27, 27, 27));
-        StatusDescription.Text = locked ? "Press " + app.Preferences.Hotkey + " to toggle the lock. Hold Ctrl to cross to another monitor." : "Move to the monitor you want to lock and press " + app.Preferences.Hotkey + " to toggle the lock.";
+        string? cross = CrossKeyName(app.Preferences.CrossKey);
+        StatusDescription.Text = locked
+            ? "Press " + app.Preferences.Hotkey + " to toggle the lock." + (cross is null ? "" : " Hold " + cross + " to cross to another monitor.")
+            : "Move to the monitor you want to lock and press " + app.Preferences.Hotkey + " to toggle the lock.";
         ToggleButton.Content = locked ? "Unlock" : "Lock monitor";
         ToggleButton.IsEnabled = app.CanToggle;
         StartupCheck.IsChecked = StartupRegistration.IsEnabled;
@@ -63,6 +68,21 @@ public partial class MainWindow : Window
     {
         try { app.SetHotkey(proposed); ShowFeedback("Shortcut saved: " + proposed, false); }
         catch (Exception error) { ShowFeedback(error.Message, true); }
+    }
+    private static string? CrossKeyName(int virtualKey) => virtualKey switch { 0x11 => "Ctrl", 0x12 => "Alt", 0x10 => "Shift", _ => null };
+    private void SelectCrossKey(int virtualKey)
+    {
+        loadingUi = true;
+        foreach (ComboBoxItem item in CrossKeyBox.Items)
+            if (item.Tag is string tag && int.TryParse(tag, out int value) && value == virtualKey) { CrossKeyBox.SelectedItem = item; break; }
+        if (CrossKeyBox.SelectedItem is null) CrossKeyBox.SelectedIndex = 0;
+        loadingUi = false;
+    }
+    private void CrossKeyChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (loadingUi || app is null) return;
+        if (CrossKeyBox.SelectedItem is ComboBoxItem item && item.Tag is string tag && int.TryParse(tag, out int value))
+            app.SetCrossKey(value);
     }
     private void ToggleClick(object sender, RoutedEventArgs e) => app.ToggleLock();
     private void StartupClick(object sender, RoutedEventArgs e) => app.SetStartup(StartupCheck.IsChecked == true);
