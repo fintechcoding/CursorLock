@@ -44,10 +44,11 @@ function StartupDisabled: Boolean;
 begin
   Result := not WizardIsTaskSelected('autostart');
 end;
-procedure InitializeWizard;
+procedure CurPageChanged(CurPageID: Integer);
 begin
-  if FileExists(ExpandConstant('{app}\CursorLock.exe')) then
-    WizardForm.TasksList.Checked[0] := RegValueExists(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'CursorLock');
+  if CurPageID = wpSelectTasks then
+    if FileExists(ExpandConstant('{app}\CursorLock.exe')) then
+      WizardForm.TasksList.Checked[0] := RegValueExists(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'CursorLock');
 end;
 function StopCursorLock: Boolean;
 var
