@@ -38,6 +38,7 @@ public partial class MainWindow : Window
         ToggleButton.Content = locked ? "Unlock" : "Lock monitor";
         ToggleButton.IsEnabled = app.CanToggle;
         StartupCheck.IsChecked = StartupRegistration.IsEnabled;
+        ShowDesktopCheck.IsChecked = app.PerMonitorShowDesktop;
         DrawMonitors();
     }
     internal void ShowFeedback(string message, bool error)
@@ -86,6 +87,7 @@ public partial class MainWindow : Window
     }
     private void ToggleClick(object sender, RoutedEventArgs e) => app.ToggleLock();
     private void StartupClick(object sender, RoutedEventArgs e) => app.SetStartup(StartupCheck.IsChecked == true);
+    private void ShowDesktopClick(object sender, RoutedEventArgs e) => app.SetPerMonitorShowDesktop(ShowDesktopCheck.IsChecked == true);
     private void ExitClick(object sender, RoutedEventArgs e) => app.ExitApplication();
     protected override void OnClosing(CancelEventArgs e)
     {

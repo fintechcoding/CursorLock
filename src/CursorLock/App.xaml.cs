@@ -22,6 +22,8 @@ public partial class App : Application
     private Icon? unlockedIcon, lockedIcon;
     private MainWindow? settingsWindow;
     private DispatcherTimer? ownershipTimer;
+    private ShowDesktopHook? showDesktop;
+    private readonly DesktopService desktop = new();
     private bool exiting;
     internal CursorLockService Cursor { get; } = new();
     internal Settings Preferences { get; private set; } = Settings.Load();
@@ -64,6 +66,11 @@ public partial class App : Application
             hotkeys.Pressed += ToggleLock;
             hotkeys.DisplayChanged += DisplayChanged;
             Cursor.Changed += UpdateState;
+            showDesktop = new ShowDesktopHook();
+            showDesktop.Triggered += () => Dispatch(desktop.Toggle);
+            if (Preferences.PerMonitorShowDesktop)
+                try { showDesktop.Install(); }
+                catch (Win32Exception error) { Trace.TraceError(error.ToString()); }
             CreateTray();
             SystemEvents.SessionSwitch += SessionSwitch;
             SystemEvents.PowerModeChanged += PowerChanged;
@@ -152,6 +159,30 @@ public partial class App : Application
         catch (Exception error) { ReportError("Could not save the cross-monitor key: " + error.Message); }
     }
 
+    internal bool PerMonitorShowDesktop => Preferences.PerMonitorShowDesktop;
+    internal void SetPerMonitorShowDesktop(bool enabled)
+    {
+        if (enabled == Preferences.PerMonitorShowDesktop) return;
+        try
+        {
+            if (enabled) showDesktop!.Install(); else showDesktop!.Uninstall();
+        }
+        catch (Win32Exception error)
+        {
+            ReportError("Could not change the Win+D behavior: " + error.Message);
+            UpdateState();
+            return;
+        }
+        try
+        {
+            var next = Preferences with { PerMonitorShowDesktop = enabled };
+            next.Save();
+            Preferences = next;
+        }
+        catch (Exception error) { ReportError("Could not save the Win+D setting: " + error.Message); }
+        UpdateState();
+    }
+
     internal void SetStartup(bool enabled)
     {
         try { StartupRegistration.SetEnabled(enabled); UpdateState(); }
@@ -223,6 +254,7 @@ public partial class App : Application
         AppDomain.CurrentDomain.ProcessExit -= ProcessExit;
         try { Cursor.Unlock(); } catch { }
         ownershipTimer?.Stop();
+        showDesktop?.Dispose();
         showWait?.Unregister(null);
         quitWait?.Unregister(null);
         hotkeys?.Dispose();
