@@ -81,6 +81,7 @@ public partial class App : Application
         }
         catch (Exception error)
         {
+            Trace.TraceError(error.ToString());
             MessageBox.Show("CursorLock could not start: " + error.Message, "CursorLock", MessageBoxButton.OK, MessageBoxImage.Error);
             ExitApplication();
         }
@@ -187,6 +188,7 @@ public partial class App : Application
     {
         try { Cursor.Unlock(); } catch { }
         e.Handled = true;
+        Trace.TraceError(e.Exception.ToString());
         MessageBox.Show("An unexpected error occurred. CursorLock will close.\n" + e.Exception.Message, "CursorLock", MessageBoxButton.OK, MessageBoxImage.Error);
         ExitApplication();
     }
