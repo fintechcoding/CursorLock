@@ -8,6 +8,17 @@ internal static class NativeMethods
     internal const int VkShift = 0x10, VkControl = 0x11, VkMenu = 0x12;
     [DllImport("user32.dll")]
     internal static extern short GetAsyncKeyState(int vKey);
+    private const int SmXVirtualScreen = 76, SmYVirtualScreen = 77, SmCxVirtualScreen = 78, SmCyVirtualScreen = 79;
+    [DllImport("user32.dll")]
+    private static extern int GetSystemMetrics(int index);
+    // The bounds the clip reports when nothing is confining the cursor: the whole
+    // virtual desktop. Used to tell a cleared clip (Win+D, focus change) apart
+    // from another application actively confining the cursor to its own rect.
+    internal static Rect GetVirtualScreen()
+    {
+        int x = GetSystemMetrics(SmXVirtualScreen), y = GetSystemMetrics(SmYVirtualScreen);
+        return new Rect(x, y, x + GetSystemMetrics(SmCxVirtualScreen), y + GetSystemMetrics(SmCyVirtualScreen));
+    }
     [StructLayout(LayoutKind.Sequential)]
     internal struct Rect
     {

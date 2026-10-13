@@ -72,12 +72,17 @@ internal sealed class CursorLockService
     }
     public void CheckOwnership()
     {
-        if (IsLocked && !bypassing && NativeMethods.GetClipCursor(out var current) && !BoundsEqual(current, lockedBounds))
-        {
-            IsLocked = false;
-            Device = null;
-            Changed?.Invoke();
-        }
+        if (!IsLocked || bypassing) return;
+        if (!NativeMethods.GetClipCursor(out var current) || BoundsEqual(current, lockedBounds)) return;
+        // The clip changed under us. Windows resets it to the whole virtual
+        // desktop whenever the confine is simply dropped - showing the desktop
+        // (Win+D) or a foreground change does this - so reassert our lock rather
+        // than giving up. Only yield when another application has set its own
+        // clip to a different, specific rect.
+        if (BoundsEqual(current, NativeMethods.GetVirtualScreen()) && NativeMethods.ClipCursor(ref lockedBounds)) return;
+        IsLocked = false;
+        Device = null;
+        Changed?.Invoke();
     }
     private static bool BoundsEqual(NativeMethods.Rect a, NativeMethods.Rect b) => a.Left == b.Left && a.Top == b.Top && a.Right == b.Right && a.Bottom == b.Bottom;
     private static void ThrowNativeError() => throw new Win32Exception(Marshal.GetLastWin32Error());
