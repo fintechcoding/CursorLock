@@ -30,7 +30,7 @@ public partial class MainWindow : Window
     {
         bool locked = app.Cursor.IsLocked;
         StatusText.Text = locked ? "Locked to monitor" : "Unlocked";
-        StatusText.Foreground = new SolidColorBrush(locked ? Color.FromRgb(0, 95, 184) : Color.FromRgb(27, 27, 27));
+        StatusText.Foreground = new SolidColorBrush(locked ? Color.FromRgb(5, 150, 105) : Color.FromRgb(27, 27, 27));
         string? cross = CrossKeyName(app.Preferences.CrossKey);
         StatusDescription.Text = locked
             ? "Press " + app.Preferences.Hotkey + " to toggle the lock." + (cross is null ? "" : " Hold " + cross + " to cross to another monitor.")
@@ -109,12 +109,12 @@ public partial class MainWindow : Window
             bool locked = app.Cursor.IsLocked && screen.DeviceName == app.Cursor.Device;
             var label = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
             label.Children.Add(new TextBlock { Text = (i + 1).ToString(), FontSize = 20, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
-            label.Children.Add(new TextBlock { Text = locked ? "LOCKED" : screen.Primary ? "PRIMARY" : "MONITOR", FontSize = 9, HorizontalAlignment = HorizontalAlignment.Center, Foreground = new SolidColorBrush(locked ? Color.FromRgb(0, 95, 184) : Color.FromRgb(91, 102, 114)) });
+            label.Children.Add(new TextBlock { Text = locked ? "LOCKED" : screen.Primary ? "PRIMARY" : "MONITOR", FontSize = 9, HorizontalAlignment = HorizontalAlignment.Center, Foreground = new SolidColorBrush(locked ? Color.FromRgb(5, 150, 105) : Color.FromRgb(91, 102, 114)) });
             var border = new Border
             {
                 Width = Math.Max(20, screen.Bounds.Width * scale - 5), Height = Math.Max(20, screen.Bounds.Height * scale - 5),
-                Background = new SolidColorBrush(locked ? Color.FromRgb(222, 236, 250) : Color.FromRgb(240, 242, 246)),
-                BorderBrush = new SolidColorBrush(locked ? Color.FromRgb(0, 95, 184) : Color.FromRgb(200, 205, 213)),
+                Background = new SolidColorBrush(locked ? Color.FromRgb(220, 247, 238) : Color.FromRgb(240, 242, 246)),
+                BorderBrush = new SolidColorBrush(locked ? Color.FromRgb(5, 150, 105) : Color.FromRgb(200, 205, 213)),
                 BorderThickness = new Thickness(locked ? 2 : 1), CornerRadius = new CornerRadius(7), Child = label,
                 ToolTip = screen.DeviceName + " • " + screen.Bounds.Width + " × " + screen.Bounds.Height
             };
