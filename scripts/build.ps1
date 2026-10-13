@@ -21,7 +21,9 @@ if (-not $SkipInstaller) {
                 (Join-Path $projectRoot '.tools\inno\ISCC.exe'),
                 "$programFiles32\Inno Setup 6\ISCC.exe",
                 "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
-                "$env:ProgramFiles\Inno Setup 7\ISCC.exe"
+                "$env:ProgramFiles\Inno Setup 7\ISCC.exe",
+                "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
+                "$env:LOCALAPPDATA\Programs\Inno Setup 7\ISCC.exe"
             )
             $InnoCompiler = $candidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
         }
