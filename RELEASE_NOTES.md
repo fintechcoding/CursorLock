@@ -1,4 +1,8 @@
-# CursorLock 1.0.1
+# CursorLock 1.0.2
+
+- Optional per-monitor Win+D: turn it on in Settings and Win+D minimizes only the application windows on the monitor your cursor is on, press again to bring them back, instead of showing the whole desktop. Off by default.
+
+## 1.0.1
 
 - Keep the lock through Win+D (Show desktop) and other foreground changes. Windows resets the cursor confine to the whole desktop in those cases; CursorLock now reasserts the lock instead of dropping it, so you no longer have to press the shortcut again. It still yields when another application sets its own cursor confine.
 
