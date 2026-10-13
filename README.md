@@ -2,7 +2,7 @@
 
 A small Windows tray app that keeps your cursor on the monitor you are using.
 
-**Ctrl + Alt + L** locks your cursor to its current monitor. Press it again to unlock. The cursor moves normally inside the monitor, including its taskbar.
+**Ctrl + Alt + L** locks your cursor to its current monitor. Press it again to unlock. The cursor moves normally inside the monitor, including its taskbar. While locked, hold **Ctrl** to let the cursor cross to another monitor — handy for dragging a window across. Release Ctrl and the lock follows to the monitor the cursor is on.
 
 ## Install and use
 

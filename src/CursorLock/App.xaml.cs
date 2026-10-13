@@ -67,9 +67,9 @@ public partial class App : Application
             CreateTray();
             SystemEvents.SessionSwitch += SessionSwitch;
             SystemEvents.PowerModeChanged += PowerChanged;
-            ownershipTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(750) };
-            ownershipTimer.Tick += (_, _) => Cursor.CheckOwnership();
-            ownershipTimer.Start();
+            // A short interval so holding Ctrl to cross monitors feels immediate.
+            ownershipTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
+            ownershipTimer.Tick += (_, _) => Cursor.Tick();
             try { hotkeys.Set(Preferences.Hotkey); }
             catch (Win32Exception error)
             {
@@ -91,7 +91,7 @@ public partial class App : Application
     {
         unlockedIcon = TrayIconFactory.Create(false);
         lockedIcon = TrayIconFactory.Create(true);
-        var menu = new Forms.ContextMenuStrip { ShowImageMargin = false, BackColor = Color.FromArgb(25, 30, 42), ForeColor = Color.White };
+        var menu = new Forms.ContextMenuStrip { ShowImageMargin = false, BackColor = Color.FromArgb(249, 249, 249), ForeColor = Color.FromArgb(27, 27, 27) };
         toggleItem = new Forms.ToolStripMenuItem("Lock", null, (_, _) => ToggleLock());
         menu.Items.Add(toggleItem);
         menu.Items.Add("Settings", null, (_, _) => ShowSettings());
@@ -156,6 +156,8 @@ public partial class App : Application
             toggleItem.Enabled = CanToggle;
             startupItem!.Checked = StartupRegistration.IsEnabled;
         }
+        // Run the fast poll only while locked.
+        if (ownershipTimer is not null) ownershipTimer.IsEnabled = Cursor.IsLocked;
         StateChanged?.Invoke();
     }
 

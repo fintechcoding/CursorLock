@@ -28,8 +28,8 @@ public partial class MainWindow : Window
     {
         bool locked = app.Cursor.IsLocked;
         StatusText.Text = locked ? "Locked to monitor" : "Unlocked";
-        StatusText.Foreground = new SolidColorBrush(locked ? Color.FromRgb(131, 232, 202) : Color.FromRgb(237, 242, 250));
-        StatusDescription.Text = locked ? "Press " + app.Preferences.Hotkey + " to toggle the lock." : "Move to the monitor you want to lock and press " + app.Preferences.Hotkey + " to toggle the lock.";
+        StatusText.Foreground = new SolidColorBrush(locked ? Color.FromRgb(0, 95, 184) : Color.FromRgb(27, 27, 27));
+        StatusDescription.Text = locked ? "Press " + app.Preferences.Hotkey + " to toggle the lock. Hold Ctrl to cross to another monitor." : "Move to the monitor you want to lock and press " + app.Preferences.Hotkey + " to toggle the lock.";
         ToggleButton.Content = locked ? "Unlock" : "Lock monitor";
         ToggleButton.IsEnabled = app.CanToggle;
         StartupCheck.IsChecked = StartupRegistration.IsEnabled;
@@ -38,7 +38,7 @@ public partial class MainWindow : Window
     internal void ShowFeedback(string message, bool error)
     {
         FeedbackText.Text = message;
-        FeedbackText.Foreground = new SolidColorBrush(error ? Color.FromRgb(255, 160, 160) : Color.FromRgb(131, 232, 202));
+        FeedbackText.Foreground = new SolidColorBrush(error ? Color.FromRgb(196, 43, 28) : Color.FromRgb(15, 118, 60));
         FeedbackText.Visibility = Visibility.Visible;
     }
     private void CaptureHotkey(object sender, KeyEventArgs e)
@@ -89,12 +89,12 @@ public partial class MainWindow : Window
             bool locked = app.Cursor.IsLocked && screen.DeviceName == app.Cursor.Device;
             var label = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
             label.Children.Add(new TextBlock { Text = (i + 1).ToString(), FontSize = 20, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
-            label.Children.Add(new TextBlock { Text = locked ? "LOCKED" : screen.Primary ? "PRIMARY" : "MONITOR", FontSize = 9, HorizontalAlignment = HorizontalAlignment.Center, Foreground = new SolidColorBrush(locked ? Color.FromRgb(131, 232, 202) : Color.FromRgb(154, 166, 188)) });
+            label.Children.Add(new TextBlock { Text = locked ? "LOCKED" : screen.Primary ? "PRIMARY" : "MONITOR", FontSize = 9, HorizontalAlignment = HorizontalAlignment.Center, Foreground = new SolidColorBrush(locked ? Color.FromRgb(0, 95, 184) : Color.FromRgb(91, 102, 114)) });
             var border = new Border
             {
                 Width = Math.Max(20, screen.Bounds.Width * scale - 5), Height = Math.Max(20, screen.Bounds.Height * scale - 5),
-                Background = new SolidColorBrush(locked ? Color.FromRgb(31, 65, 60) : Color.FromRgb(35, 44, 59)),
-                BorderBrush = new SolidColorBrush(locked ? Color.FromRgb(131, 232, 202) : Color.FromRgb(69, 84, 109)),
+                Background = new SolidColorBrush(locked ? Color.FromRgb(222, 236, 250) : Color.FromRgb(240, 242, 246)),
+                BorderBrush = new SolidColorBrush(locked ? Color.FromRgb(0, 95, 184) : Color.FromRgb(200, 205, 213)),
                 BorderThickness = new Thickness(locked ? 2 : 1), CornerRadius = new CornerRadius(7), Child = label,
                 ToolTip = screen.DeviceName + " • " + screen.Bounds.Width + " × " + screen.Bounds.Height
             };

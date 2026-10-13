@@ -2,7 +2,8 @@
 
 - Lock the cursor to the current monitor with Ctrl + Alt + L; press again to unlock.
 - Configurable global shortcut with conflict handling.
-- English dark settings window with a live monitor layout.
+- Hold Ctrl while locked to cross to another monitor and carry a window across.
+- English light settings window with a live monitor layout.
 - Tray controls and optional Windows autostart.
 - Per-user installer and portable Windows x64 package with the runtime included.
 - Unlock on display changes, session lock/disconnect and suspend/resume.
